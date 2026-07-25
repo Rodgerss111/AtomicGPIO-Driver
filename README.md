@@ -30,13 +30,13 @@ We also:
 
 AtomicGPIO-Driver/
 ├── include/
-│ └── gpio_driver.h # Macros & function prototypes
+│   └── gpio_driver.h          # Macros & function prototypes
 ├── src/
-│ └── gpio_driver.c # gpio_read() implementation
+│   └── gpio_driver.c          # gpio_read() implementation
 ├── examples/
-│ └── stm32f4_button_led/
-│ ├── main.c # Full demo (button → LED)
-│ └── README.md
+│   └── stm32f4_button_led/
+│       ├── main.c             # Full demo (button → LED)
+│       └── README.md
 
 ---
 
