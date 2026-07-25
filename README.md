@@ -50,7 +50,6 @@ Copy `gpio_driver.h` and `gpio_driver.c` into your source tree and add them to y
 
 In your own header or `main.c`:
 
-```c
 #define GPIOB_BASE   0x40020400    // Example: STM32F4 GPIOB
 #define BUTTON_PIN   5
 #define GPIO_PIN_0   (1 << 0)
@@ -64,7 +63,6 @@ GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0); // Pin 0 LOW
 
 // Read a pin state (button, sensor)
 uint8_t state = gpio_read(GPIOB_BASE, BUTTON_PIN);
-
 
 ## 4️ Run the provided example
 
