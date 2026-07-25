@@ -40,7 +40,7 @@ AtomicGPIO-Driver/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1️⃣ Add the driver to your project
 
@@ -55,7 +55,7 @@ In your own header or `main.c`:
 #define BUTTON_PIN   5
 #define GPIO_PIN_0   (1 << 0)
 
-### 3️Use the API
+## 3️Use the API
 #include "gpio_driver.h"
 
 // Atomic set / clear (no IRQ masking needed)
@@ -66,7 +66,7 @@ GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0); // Pin 0 LOW
 uint8_t state = gpio_read(GPIOB_BASE, BUTTON_PIN);
 
 
-### 4️ Run the provided example
+## 4️ Run the provided example
 
 The examples/stm32f4_button_led/main.c shows a complete, loop‑back demo:
 
@@ -76,3 +76,35 @@ The button polling uses gpio_read() which internally reads the volatile IDR.
 
 The LED control uses GPIO_SET_PIN / GPIO_CLEAR_PIN – no read‑modify‑write.
 
+## Why volatile and BSRR Matter (Technical Deep Dive)
+The volatile Promise
+
+#define GET_REG(base, offset) ((volatile uint32_t *)((base) + (offset)))
+
+Without volatile, a compiler might cache the IDR value and never re‑read the hardware.
+Our macro guarantees a fresh read every time, so a while (gpio_read(...) == 0) loop actually waits for a real‑world signal.
+
+## Atomic Writes – Why Not |=?
+
+// Dangerous (non-atomic):
+GPIOB->ODR |= (1 << 0);   // Read ODR, modify, write back → IRQ could corrupt
+
+With BSRR:
+
+GPIOB->BSRR = (1 << 0);        // Set pin 0, IGNORES all other pins
+GPIOB->BSRR = (1 << (0 + 16)); // Clear pin 0
+
+## Bit‑masking in gpio_read
+
+if (*in_reg & (1 << pin)) {
+    return 1;
+}
+
+The & mask isolates exactly one pin. The hardware register may have 16 pins’ worth of data, but we only care about our target. The result is either zero (low) or non‑zero (high). Simple, fast, and safe.
+
+## Porting to Another MCU
+Change GPIO_IN_OFFSET and GPIO_BSRR_OFFSET in gpio_driver.h if your MCU uses different offsets (e.g., STM32L0, STM32G0).
+
+Adjust the GPIO_TypeDef struct in main.c or create a hardware‑specific header that maps to your MCU’s register layout. The only requirement is that the BSRR member falls at offset 0x18 (or whatever GPIO_BSRR_OFFSET says).
+
+That’s it – the driver itself only uses the base address and a pin number. No need to rewrite logic.

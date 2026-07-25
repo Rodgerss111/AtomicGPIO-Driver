@@ -34,14 +34,14 @@ If using a Nucleo board:
    make flash   # uses st-flash, openocd, or your debug probe
 
 ## With PlatformIO
-Copy the src/ and include/ folders into a PlatformIO project.
+1. Copy the src/ and include/ folders into a PlatformIO project.
 
-Set board = genericSTM32F401RE (or your board) in platformio.ini.
+2. Set board = genericSTM32F401RE (or your board) in platformio.ini.
 
-Build and upload with pio run -t upload.
+3. Build and upload with pio run -t upload.
 
 ## Code Walkthrough
-
+c
 // Wait for button press (reads volatile IDR every iteration)
 while (gpio_read(GPIOB_BASE, BUTTON_PIN) == 0);
 
@@ -53,6 +53,7 @@ for (volatile uint32_t i = 0; i < 500000; i++);
 
 // Atomic clear: write bit 0 to upper BSRR → PB0 goes LOW
 GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0);
+
 No interrupt masking needed – BSRR writes are single STR instructions.
 
 The volatile loop ensures the compiler never removes the delay.
