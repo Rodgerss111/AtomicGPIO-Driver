@@ -27,7 +27,7 @@ We also:
 ---
 
 ## 📂 Project Structure
-
+```
 AtomicGPIO-Driver/
 ├── include/
 │   └── gpio_driver.h          # Macros & function prototypes
@@ -37,7 +37,7 @@ AtomicGPIO-Driver/
 │   └── stm32f4_button_led/
 │       ├── main.c             # Full demo (button → LED)
 │       └── README.md
-
+```
 ---
 
 ## Quick Start
