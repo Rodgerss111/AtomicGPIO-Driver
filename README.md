@@ -67,7 +67,7 @@ GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0); // Pin 0 LOW
 uint8_t state = gpio_read(GPIOB_BASE, BUTTON_PIN);
 ```
 ## 4️ Run the provided example
-
+```c
 The examples/stm32f4_button_led/main.c shows a complete, loop‑back demo:
 
 Push button on PB5 → LED on PB0 lights for ~500k cycle delay.
@@ -75,6 +75,7 @@ Push button on PB5 → LED on PB0 lights for ~500k cycle delay.
 The button polling uses gpio_read() which internally reads the volatile IDR.
 
 The LED control uses GPIO_SET_PIN / GPIO_CLEAR_PIN – no read‑modify‑write.
+```
 
 ---
 

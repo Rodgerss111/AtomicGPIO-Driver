@@ -34,7 +34,7 @@ If using a Nucleo board:
    make flash   # uses st-flash, openocd, or your debug probe
 
 ## With PlatformIO
-```
+```c
 1. Copy the src/ and include/ folders into a PlatformIO project.
 
 2. Set board = genericSTM32F401RE (or your board) in platformio.ini.
