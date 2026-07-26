@@ -74,7 +74,7 @@ Push button on PB5 → LED on PB0 lights for ~500k cycle delay.
 The button polling uses gpio_read() which internally reads the volatile IDR.
 
 The LED control uses GPIO_SET_PIN / GPIO_CLEAR_PIN – no read‑modify‑write.
-
+---
 ## Why volatile and BSRR Matter (Technical Deep Dive)
 The volatile Promise:
 ```c
@@ -82,7 +82,7 @@ The volatile Promise:
 ```
 Without volatile, a compiler might cache the IDR value and never re‑read the hardware.
 Our macro guarantees a fresh read every time, so a while (gpio_read(...) == 0) loop actually waits for a real‑world signal.
-
+---
 ## Atomic Writes – Why Not |=?
 ```c
 // Dangerous (non-atomic):
@@ -92,15 +92,16 @@ With BSRR:
 
 GPIOB->BSRR = (1 << 0);        // Set pin 0, IGNORES all other pins
 GPIOB->BSRR = (1 << (0 + 16)); // Clear pin 0
-
+```
+---
 ## Bit‑masking in gpio_read
-
+```c
 if (*in_reg & (1 << pin)) {
     return 1;
 }
 ```
 The & mask isolates exactly one pin. The hardware register may have 16 pins’ worth of data, but we only care about our target. The result is either zero (low) or non‑zero (high). Simple, fast, and safe.
-
+---
 ## Porting to Another MCU
 Change GPIO_IN_OFFSET and GPIO_BSRR_OFFSET in gpio_driver.h if your MCU uses different offsets (e.g., STM32L0, STM32G0).
 
