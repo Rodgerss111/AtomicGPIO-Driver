@@ -26,7 +26,7 @@ We also:
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```
 AtomicGPIO-Driver/
 ├── include/
@@ -43,11 +43,11 @@ AtomicGPIO-Driver/
 
 ## Quick Start
 
-### 1️⃣ Add the driver to your project
+### 1. Add the driver to your project
 
 Copy `gpio_driver.h` and `gpio_driver.c` into your source tree and add them to your build.
 
-### 2️⃣ Define your GPIO base address and pin mapping
+### 2. Define your GPIO base address and pin mapping
 
 In your own header or `main.c`:
 ```c
@@ -55,7 +55,7 @@ In your own header or `main.c`:
 #define BUTTON_PIN   5
 #define GPIO_PIN_0   (1 << 0)
 ```
-## 3️Use the API
+## 3. Use the API
 ```c
 #include "gpio_driver.h"
 
@@ -66,7 +66,7 @@ GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0); // Pin 0 LOW
 // Read a pin state (button, sensor)
 uint8_t state = gpio_read(GPIOB_BASE, BUTTON_PIN);
 ```
-## 4️ Run the provided example
+## 4. Run the provided example
 ```c
 The examples/stm32f4_button_led/main.c shows a complete, loop‑back demo:
 
