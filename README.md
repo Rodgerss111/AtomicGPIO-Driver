@@ -49,12 +49,13 @@ Copy `gpio_driver.h` and `gpio_driver.c` into your source tree and add them to y
 ### 2️⃣ Define your GPIO base address and pin mapping
 
 In your own header or `main.c`:
-
+```
 #define GPIOB_BASE   0x40020400    // Example: STM32F4 GPIOB
 #define BUTTON_PIN   5
 #define GPIO_PIN_0   (1 << 0)
-
+```
 ## 3️Use the API
+```
 #include "gpio_driver.h"
 
 // Atomic set / clear (no IRQ masking needed)
@@ -63,7 +64,7 @@ GPIO_CLEAR_PIN(GPIOB, GPIO_PIN_0); // Pin 0 LOW
 
 // Read a pin state (button, sensor)
 uint8_t state = gpio_read(GPIOB_BASE, BUTTON_PIN);
-
+```
 ## 4️ Run the provided example
 
 The examples/stm32f4_button_led/main.c shows a complete, loop‑back demo:
@@ -76,14 +77,14 @@ The LED control uses GPIO_SET_PIN / GPIO_CLEAR_PIN – no read‑modify‑write.
 
 ## Why volatile and BSRR Matter (Technical Deep Dive)
 The volatile Promise
-
+```
 #define GET_REG(base, offset) ((volatile uint32_t *)((base) + (offset)))
-
+```
 Without volatile, a compiler might cache the IDR value and never re‑read the hardware.
 Our macro guarantees a fresh read every time, so a while (gpio_read(...) == 0) loop actually waits for a real‑world signal.
 
 ## Atomic Writes – Why Not |=?
-
+```
 // Dangerous (non-atomic):
 GPIOB->ODR |= (1 << 0);   // Read ODR, modify, write back → IRQ could corrupt
 
@@ -97,7 +98,7 @@ GPIOB->BSRR = (1 << (0 + 16)); // Clear pin 0
 if (*in_reg & (1 << pin)) {
     return 1;
 }
-
+```
 The & mask isolates exactly one pin. The hardware register may have 16 pins’ worth of data, but we only care about our target. The result is either zero (low) or non‑zero (high). Simple, fast, and safe.
 
 ## Porting to Another MCU
