@@ -49,13 +49,13 @@ Copy `gpio_driver.h` and `gpio_driver.c` into your source tree and add them to y
 ### 2️⃣ Define your GPIO base address and pin mapping
 
 In your own header or `main.c`:
-```
+```c
 #define GPIOB_BASE   0x40020400    // Example: STM32F4 GPIOB
 #define BUTTON_PIN   5
 #define GPIO_PIN_0   (1 << 0)
 ```
 ## 3️Use the API
-```
+```c
 #include "gpio_driver.h"
 
 // Atomic set / clear (no IRQ masking needed)
@@ -76,15 +76,15 @@ The button polling uses gpio_read() which internally reads the volatile IDR.
 The LED control uses GPIO_SET_PIN / GPIO_CLEAR_PIN – no read‑modify‑write.
 
 ## Why volatile and BSRR Matter (Technical Deep Dive)
-The volatile Promise
-```
+The volatile Promise:
+```c
 #define GET_REG(base, offset) ((volatile uint32_t *)((base) + (offset)))
 ```
 Without volatile, a compiler might cache the IDR value and never re‑read the hardware.
 Our macro guarantees a fresh read every time, so a while (gpio_read(...) == 0) loop actually waits for a real‑world signal.
 
 ## Atomic Writes – Why Not |=?
-```
+```c
 // Dangerous (non-atomic):
 GPIOB->ODR |= (1 << 0);   // Read ODR, modify, write back → IRQ could corrupt
 
